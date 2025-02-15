@@ -2,7 +2,15 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+- News Box App
+1.Developed a news aggregation web app using Next.js and modern frontend technologies.
+2.Integrated news APIs to fetch real-time updates from multiple sources.
+3.Implemented category-based filtering to let users browse news by topics like Business, Technology, and Sports.
+4.Added a search functionality for quick access to specific news articles.
+5.Designed and implemented a dark mode for better user experience.
+6.Optimized performance with server-side rendering (SSR) and client-side fetching for seamless browsing.
+7.Ensured a responsive UI for a smooth experience on desktop and mobile devices.
+8.Hosted and deployed the project for real-world accessibility.
 
 ```bash
 npm run dev
@@ -15,22 +23,3 @@ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
