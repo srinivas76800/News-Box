@@ -24,7 +24,8 @@ const Body = () => {
 
       const response = await fetch(api)
       const data = await response.json();
-
+      console.log(data, 'this is data..')
+      console.log(data.status, data.status !== 'ok')
       if (data.status !== "ok" || !Array.isArray(data.articles)) {
         setHasMore(false);
         setLoading(false);
