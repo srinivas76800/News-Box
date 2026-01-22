@@ -16,50 +16,62 @@ const Body = () => {
   yesterday.setDate(yesterday.getDate() - 1)
   const formattedYesterday = yesterday.toISOString().split("T")[0]
 
-  const fetchNews = async (pageNumber) => {
-    if (loading || !hasMore) return;
+ const fetchNews = async (pageNumber) => {
+  if (loading || !hasMore) return;
 
-    try {
-      setLoading(true)
+  try {
+    setLoading(true);
+    const api = `https://newsapi.org/v2/everything?q=${selected || 'india'}&from=${formattedYesterday}&sortBy=publishedAt&page=${pageNumber}&pageSize=10&apiKey=e396316542e44ddb921b7acb910e1eae`;
 
-      const api = `https://newsapi.org/v2/everything?q=${selected || 'india'}&from=${formattedYesterday}&sortBy=publishedAt&page=${pageNumber}&pageSize=10&apiKey=e396316542e44ddb921b7acb910e1eae`
+    const response = await fetch(api);
+    const data = await response.json();
 
-      const response = await fetch(api)
-      const data = await response.json();
-      console.log(data, 'this is data..')
-      console.log(data.status, data.status !== 'ok')
-      if (data.status !== "ok" || !Array.isArray(data.articles)) {
-        setHasMore(false);
-        setLoading(false);
-        return;
-      }
-
-      setNews(prev => [
-        ...prev,
-        ...(Array.isArray(data.articles) ? data.articles : [])
-      ]);
-
-
-    } catch (error) {
-      console.log('error on fetching data', error)
-    } finally {
-      setLoading(false)
+    // Check if the API returned an error (like Rate Limited)
+    if (data.status === "error") {
+      console.error("API Error:", data.message);
+      setHasMore(false);
+      return;
     }
+
+    if (!data.articles) {
+      setHasMore(false);
+      return;
+    }
+
+    setNews(prev => {
+      // If page 1, replace news; otherwise, append
+      return pageNumber === 1 ? data.articles : [...prev, ...data.articles];
+    });
+
+    if (data.articles.length < 10) setHasMore(false);
+
+  } catch (error) {
+    console.error('Fetch error:', error);
+  } finally {
+    setLoading(false);
   }
-
-  // Reset when category changes
-  useEffect(() => {
-    setNews([])
-    setPage(1)
-    setHasMore(true)
-    setLoading(false) // 🔥 ADD THIS
-  }, [selected])
+};
 
 
-  // Fetch data
-  useEffect(() => {
-    fetchNews(page)
-  }, [page, selected])
+ // 1. Single Effect to handle category changes
+useEffect(() => {
+  // Clear everything immediately
+  setNews([]);
+  setHasMore(true);
+  
+  if (page === 1) {
+    fetchNews(1); // Manually trigger for page 1
+  } else {
+    setPage(1); // This will trigger the page-based useEffect below
+  }
+}, [selected]);
+
+// 2. Fetch data when page changes
+useEffect(() => {
+  if (page > 1) {
+    fetchNews(page);
+  }
+}, [page]);
 
   // Intersection Observer
   useEffect(() => {
