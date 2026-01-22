@@ -17,6 +17,8 @@ const Body = () => {
   const formattedYesterday = yesterday.toISOString().split("T")[0]
 
   const fetchNews = async (pageNumber) => {
+    if (loading || !hasMore) return;
+
     try {
       setLoading(true)
 
@@ -32,7 +34,11 @@ const Body = () => {
         return;
       }
 
-      setNews(prev => [...prev, ...data.articles]);
+      setNews(prev => [
+        ...prev,
+        ...(Array.isArray(data.articles) ? data.articles : [])
+      ]);
+
 
     } catch (error) {
       console.log('error on fetching data', error)
@@ -46,7 +52,9 @@ const Body = () => {
     setNews([])
     setPage(1)
     setHasMore(true)
+    setLoading(false) // 🔥 ADD THIS
   }, [selected])
+
 
   // Fetch data
   useEffect(() => {
@@ -63,7 +71,11 @@ const Body = () => {
           setPage(prev => prev + 1)
         }
       },
-      { threshold: 0 }
+      {
+        threshold: 0,
+        rootMargin: "200px"
+      }
+
     )
 
     observer.observe(observerRef.current)
