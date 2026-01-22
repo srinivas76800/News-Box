@@ -27,21 +27,20 @@ const Body = () => {
     const data = await response.json();
 
     // Check if the API returned an error (like Rate Limited)
-    if (data.status === "error") {
-      console.error("API Error:", data.message);
+    if (data && data.status === "error") {
+      console.error("API Error:", data.message, data);
       setHasMore(false);
       return;
     }
 
-    if (!data.articles) {
+    // Ensure `articles` is an array before iterating/spreading it
+    if (!Array.isArray(data?.articles)) {
+      console.error("Unexpected articles format from API:", data);
       setHasMore(false);
       return;
     }
 
-    setNews(prev => {
-      // If page 1, replace news; otherwise, append
-      return pageNumber === 1 ? data.articles : [...prev, ...data.articles];
-    });
+    setNews(prev => (pageNumber === 1 ? data.articles : [...prev, ...data.articles]));
 
     if (data.articles.length < 10) setHasMore(false);
 
