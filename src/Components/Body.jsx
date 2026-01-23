@@ -16,61 +16,62 @@ const Body = () => {
   yesterday.setDate(yesterday.getDate() - 1)
   const formattedYesterday = yesterday.toISOString().split("T")[0]
 
- const fetchNews = async (pageNumber) => {
-  if (loading || !hasMore) return;
+  const fetchNews = async (pageNumber) => {
+    if (loading || !hasMore) return;
 
-  try {
-    setLoading(true);
-    const api = `https://newsapi.org/v2/everything?q=${selected || 'india'}&from=${formattedYesterday}&sortBy=publishedAt&page=${pageNumber}&pageSize=10&apiKey=e396316542e44ddb921b7acb910e1eae`;
+    try {
+      setLoading(true);
+      // const api = `https://newsapi.org/v2/everything?q=${selected || 'india'}&from=${formattedYesterday}&sortBy=publishedAt&page=${pageNumber}&pageSize=10&apiKey=`;
 
-    const response = await fetch(api);
-    const data = await response.json();
+      const response = await fetch(`/api/news?q=${selected || 'india'}&page=${pageNumber}&from=${formattedYesterday}`)
 
-    // Check if the API returned an error (like Rate Limited)
-    if (data && data.status === "error") {
-      console.error("API Error:", data.message, data);
-      setHasMore(false);
-      return;
+      const data = await response.json();
+
+      // Check if the API returned an error (like Rate Limited)
+      if (data && data.status === "error") {
+        console.error("API Error:", data.message, data);
+        setHasMore(false);
+        return;
+      }
+
+      // Ensure `articles` is an array before iterating/spreading it
+      if (!Array.isArray(data?.articles)) {
+        console.error("Unexpected articles format from API:", data);
+        setHasMore(false);
+        return;
+      }
+
+      setNews(prev => (pageNumber === 1 ? data.articles : [...prev, ...data.articles]));
+
+      if (data.articles.length < 10) setHasMore(false);
+
+    } catch (error) {
+      console.error('Fetch error:', error);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // Ensure `articles` is an array before iterating/spreading it
-    if (!Array.isArray(data?.articles)) {
-      console.error("Unexpected articles format from API:", data);
-      setHasMore(false);
-      return;
+
+  // 1. Single Effect to handle category changes
+  useEffect(() => {
+    // Clear everything immediately
+    setNews([]);
+    setHasMore(true);
+
+    if (page === 1) {
+      fetchNews(1); // Manually trigger for page 1
+    } else {
+      setPage(1); // This will trigger the page-based useEffect below
     }
+  }, [selected]);
 
-    setNews(prev => (pageNumber === 1 ? data.articles : [...prev, ...data.articles]));
-
-    if (data.articles.length < 10) setHasMore(false);
-
-  } catch (error) {
-    console.error('Fetch error:', error);
-  } finally {
-    setLoading(false);
-  }
-};
-
-
- // 1. Single Effect to handle category changes
-useEffect(() => {
-  // Clear everything immediately
-  setNews([]);
-  setHasMore(true);
-  
-  if (page === 1) {
-    fetchNews(1); // Manually trigger for page 1
-  } else {
-    setPage(1); // This will trigger the page-based useEffect below
-  }
-}, [selected]);
-
-// 2. Fetch data when page changes
-useEffect(() => {
-  if (page > 1) {
-    fetchNews(page);
-  }
-}, [page]);
+  // 2. Fetch data when page changes
+  useEffect(() => {
+    if (page > 1) {
+      fetchNews(page);
+    }
+  }, [page]);
 
   // Intersection Observer
   useEffect(() => {
