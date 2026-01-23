@@ -21,7 +21,6 @@ const Body = () => {
 
     try {
       setLoading(true);
-      // const api = `https://newsapi.org/v2/everything?q=${selected || 'india'}&from=${formattedYesterday}&sortBy=publishedAt&page=${pageNumber}&pageSize=10&apiKey=`;
 
       const response = await fetch(`/api/news?q=${selected || 'india'}&page=${pageNumber}&from=${formattedYesterday}`)
 
