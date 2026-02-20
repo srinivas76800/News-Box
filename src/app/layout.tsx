@@ -1,6 +1,15 @@
 import "./globals.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import SelectedProvider from '@/context/SelectedContext'
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: {
+    default: "Tech News",
+    template: "%s | Tech News India",
+  },
+  description: "Latest tech updates daily.",
+};
 
 export default function RootLayout({
   children,
@@ -8,12 +17,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <SelectedProvider>
     <html lang="en">
       <body>
-        {children}
+        <SelectedProvider>
+          {children}
+        </SelectedProvider>
       </body>
     </html>
-    </SelectedProvider>
   );
 }
